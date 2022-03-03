@@ -6,3 +6,7 @@
 !redist/windows/*.dll
 !redist/osx/*.dylib
 !redist/linux/*.so
+dll_build/
+build/
+dist/
+*.egg-info

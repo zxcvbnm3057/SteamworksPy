@@ -5,11 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "(Windows) 附加",
             "type": "cppvsdbg",
             "request": "attach",
             "processId": "${command:pickProcess}",
-            "symbolSearchPath": "${workspaceFolder}/_build_5809"
+            "symbolSearchPath": "${workspaceFolder}/dll_build"
         },
         {
             "name": "Python C++ Debug",

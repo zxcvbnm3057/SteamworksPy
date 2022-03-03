@@ -8,28 +8,28 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 __version__ = '2.0.0'
-__author__  = 'GP Garcia'
+__author__ = 'GP Garcia'
 
 import sys, os, time
 from ctypes import *
 from enum import Enum
 
-import steamworks.util 		as steamworks_util
-from steamworks.enums 		import *
-from steamworks.structs 	import *
-from steamworks.exceptions 	import *
-from steamworks.methods 	import STEAMWORKS_METHODS
+import steamworks.util as steamworks_util
+from steamworks.enums import *
+from steamworks.structs import *
+from steamworks.exceptions import *
+from steamworks.methods import STEAMWORKS_METHODS
 
-from steamworks.interfaces.apps         import SteamApps
-from steamworks.interfaces.friends      import SteamFriends
-from steamworks.interfaces.matchmaking  import SteamMatchmaking
-from steamworks.interfaces.music        import SteamMusic
-from steamworks.interfaces.screenshots  import SteamScreenshots
-from steamworks.interfaces.users        import SteamUsers
-from steamworks.interfaces.userstats    import SteamUserStats
-from steamworks.interfaces.utils        import SteamUtils
-from steamworks.interfaces.workshop     import SteamWorkshop
-from steamworks.interfaces.microtxn     import SteamMicroTxn
+from steamworks.interfaces.apps import SteamApps
+from steamworks.interfaces.friends import SteamFriends
+from steamworks.interfaces.matchmaking import SteamMatchmaking
+from steamworks.interfaces.music import SteamMusic
+from steamworks.interfaces.screenshots import SteamScreenshots
+from steamworks.interfaces.users import SteamUsers
+from steamworks.interfaces.userstats import SteamUserStats
+from steamworks.interfaces.utils import SteamUtils
+from steamworks.interfaces.workshop import SteamWorkshop
+from steamworks.interfaces.microtxn import SteamMicroTxn
 
 os.environ['LD_LIBRARY_PATH'] = os.getcwd()
 
@@ -41,15 +41,14 @@ class STEAMWORKS(object):
     _arch = steamworks_util.get_arch()
     _native_supported_platforms = ['linux', 'linux2', 'darwin', 'win32']
 
-    def __init__(self, supported_platforms: list = []) -> None:
+    def __init__(self, dll_path: str, supported_platforms: list = []) -> None:
         self._supported_platforms = supported_platforms
-        self._loaded 	= False
-        self._cdll 		= None
+        self._loaded = False
+        self._cdll = None
 
-        self.app_id 	= 0
+        self.dll_path = dll_path
 
         self._initialize()
-
 
     def _initialize(self) -> bool:
         """Initialize module by loading STEAMWORKS library
@@ -77,7 +76,7 @@ class STEAMWORKS(object):
             # This case is theoretically unreachable
             raise UnsupportedPlatformException(f'"{platform}" is not being supported')
 
-        library_path = os.path.join(os.getcwd(), library_file_name)
+        library_path = os.path.join(self.dll_path, library_file_name)
         if not os.path.isfile(library_path):
             raise MissingSteamworksLibraryException(f'Missing library at {library_path}')
 
@@ -86,14 +85,13 @@ class STEAMWORKS(object):
             raise FileNotFoundError(f'steam_appid.txt missing from {os.getcwd()}')
 
         with open(app_id_file, 'r') as f:
-            self.app_id	= int(f.read())
+            self.app_id = int(f.read())
 
-        self._cdll 		= CDLL(library_path) # Throw native exception in case of error
-        self._loaded 	= True
+        self._cdll = CDLL(library_path)  # Throw native exception in case of error
+        self._loaded = True
 
         self._load_steamworks_api()
         return self._loaded
-
 
     def _load_steamworks_api(self) -> None:
         """Load all methods from steamworks api and assign their correct arg/res types based on method map
@@ -116,23 +114,21 @@ class STEAMWORKS(object):
 
         self._reload_steamworks_interfaces()
 
-
     def _reload_steamworks_interfaces(self) -> None:
         """Reload all interface classes
 
         :return: None
         """
-        self.Apps           = SteamApps(self)
-        self.Friends        = SteamFriends(self)
-        self.Matchmaking    = SteamMatchmaking(self)
-        self.Music          = SteamMusic(self)
-        self.Screenshots    = SteamScreenshots(self)
-        self.Users          = SteamUsers(self)
-        self.UserStats      = SteamUserStats(self)
-        self.Utils          = SteamUtils(self)
-        self.Workshop       = SteamWorkshop(self)
-        self.MicroTxn       = SteamMicroTxn(self)
-
+        self.Apps = SteamApps(self)
+        self.Friends = SteamFriends(self)
+        self.Matchmaking = SteamMatchmaking(self)
+        self.Music = SteamMusic(self)
+        self.Screenshots = SteamScreenshots(self)
+        self.Users = SteamUsers(self)
+        self.UserStats = SteamUserStats(self)
+        self.Utils = SteamUtils(self)
+        self.Workshop = SteamWorkshop(self)
+        self.MicroTxn = SteamMicroTxn(self)
 
     def initialize(self) -> bool:
         """Initialize Steam API connection
@@ -151,7 +147,8 @@ class STEAMWORKS(object):
             raise SteamNotRunningException('Steam is not running')
 
         elif result == 3:
-            raise SteamConnectionException('Not logged on or connection to Steam client could not be established')
+            raise SteamConnectionException(
+                'Not logged on or connection to Steam client could not be established')
 
         elif result != 0:
             raise GenericSteamException('Failed to initialize STEAMWORKS API')
@@ -172,9 +169,8 @@ class STEAMWORKS(object):
         :return: None
         """
         self._cdll.SteamShutdown()
-        self._loaded    = False
-        self._cdll      = None
-
+        self._loaded = False
+        self._cdll = None
 
     def loaded(self) -> bool:
         """Is library loaded and everything populated
@@ -182,7 +178,6 @@ class STEAMWORKS(object):
         :return: bool
         """
         return (self._loaded and self._cdll)
-
 
     def run_callbacks(self) -> bool:
         """Execute all callbacks

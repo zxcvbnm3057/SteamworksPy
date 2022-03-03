@@ -34,7 +34,7 @@ if not exist .\library\sdk\redist\steam_api64.lib (
 goto main
 
 :main
-SET dirname=_build_%random%
+SET dirname=dll_build
 echo [*] Building in %dirname%
 mkdir %dirname%
 
@@ -50,10 +50,10 @@ mklink /J ".\%dirname%\sdk" ".\library\sdk\"
 cd %dirname%
 
 echo [*] Building SteamworksPy.dll
-cl.exe /Zi /D_USRDLL /D_WINDLL SteamworksPy.cpp steam_api64.lib /link /DLL /OUT:SteamworksPy64.dll
+cl.exe /D_USRDLL /D_WINDLL SteamworksPy.cpp steam_api64.lib /link /DLL /OUT:SteamworksPy64.dll
 
 echo [*] Moving finished library into main repo
-move "SteamworksPy64.dll" "..\redist\windows\."
+copy "SteamworksPy64.dll" "..\redist\windows\."
 
 cd ..
 

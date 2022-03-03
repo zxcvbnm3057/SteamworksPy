@@ -10,12 +10,12 @@ goto setup_environment
 
 :setup_environment
 echo [*] Setting up environment
-if not exist "C:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" (
+if not exist "D:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" (
     echo [!] Could not find your Visual Studio %1 installation!
     exit /B 5
 )
-call "C:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=amd64
-call "C:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" -test
+call "D:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=amd64
+call "D:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" -test
 goto check_for_steamworks
 
 :steamworks_missing
@@ -50,7 +50,7 @@ mklink /J ".\%dirname%\sdk" ".\library\sdk\"
 cd %dirname%
 
 echo [*] Building SteamworksPy.dll
-cl.exe /D_USRDLL /D_WINDLL SteamworksPy.cpp steam_api64.lib /link /DLL /OUT:SteamworksPy64.dll
+cl.exe /Zi /D_USRDLL /D_WINDLL SteamworksPy.cpp steam_api64.lib /link /DLL /OUT:SteamworksPy64.dll
 
 echo [*] Moving finished library into main repo
 move "SteamworksPy64.dll" "..\redist\windows\."

@@ -1,5 +1,6 @@
 *.pyc
 *.dll
+*.lib
 *.so
 *.dylib
 !redist/windows/*.dll

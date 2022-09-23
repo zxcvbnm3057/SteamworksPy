@@ -20,13 +20,11 @@ class ItemInstalled_t(Structure):
     _fields_ = [("appId", c_uint32), ("publishedFileId", c_uint64)]
 
 
-class RemoteStorageSubscribePublishedFileResult_t(Structure):
-    _fields_ = [("result", c_int), ("publishedFileId", c_uint64)]
-
-
-class RemoteStorageUnsubscribePublishedFileResult_t(Structure):
-    _fields_ = [("result", c_int), ("publishedFileId", c_uint64)]
-
+class SubscriptionResult(Structure):
+    _fields_ = [
+        ("result", c_int32),
+        ("publishedFileId", c_uint64)
+    ]
 
 class MicroTxnAuthorizationResponse_t(Structure):
     _fields_ = [("appId", c_uint32), ("orderId", c_uint64), ("authorized", c_bool)]

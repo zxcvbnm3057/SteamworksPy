@@ -41,7 +41,7 @@ class STEAMWORKS(object):
     _arch = steamworks_util.get_arch()
     _native_supported_platforms = ['linux', 'linux2', 'darwin', 'win32']
 
-    def __init__(self, dll_path: str, supported_platforms: list = []) -> None:
+    def __init__(self, dll_path: str=os.path.dirname(os.path.abspath(__file__)), supported_platforms: list = []) -> None:
         self._supported_platforms = supported_platforms
         self._loaded = False
         self._cdll = None

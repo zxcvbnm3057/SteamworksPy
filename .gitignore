@@ -10,3 +10,6 @@ dll_build/
 build/
 dist/
 *.egg-info
+
+!steamworks/steam_api64.dll
+!steamworks/SteamworksPy64.dll

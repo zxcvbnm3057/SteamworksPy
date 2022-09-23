@@ -57,5 +57,8 @@ copy "SteamworksPy64.dll" "..\redist\windows\."
 
 cd ..
 
+copy ".\redist\windows\SteamworksPy64.dll" ".\steamworks\."
+copy ".\library\sdk\redist\steam_api64.dll" ".\steamworks\."
+
 echo [*] Cleanup
 rmdir /S /Q %dirname%

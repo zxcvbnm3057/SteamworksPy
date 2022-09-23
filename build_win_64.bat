@@ -10,12 +10,12 @@ goto setup_environment
 
 :setup_environment
 echo [*] Setting up environment
-if not exist "D:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" (
+if not exist "C:\Program Files\Microsoft Visual Studio\%1\Community\Common7\Tools\VsDevCmd.bat" (
     echo [!] Could not find your Visual Studio %1 installation!
     exit /B 5
 )
-call "D:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=amd64
-call "D:\Program Files (x86)\Microsoft Visual Studio\%1\BuildTools\Common7\Tools\VsDevCmd.bat" -test
+call "C:\Program Files\Microsoft Visual Studio\%1\Community\Common7\Tools\VsDevCmd.bat" -host_arch=amd64 -arch=amd64
+call "C:\Program Files\Microsoft Visual Studio\%1\Community\Common7\Tools\VsDevCmd.bat" -test
 goto check_for_steamworks
 
 :steamworks_missing

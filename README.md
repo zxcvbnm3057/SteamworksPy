@@ -1,34 +1,37 @@
 # SteamworksPy
-Howdy!  This project originally started as a fork of Easimer's SteamworksForPython in an attempt to bring a fully-functional Python module for Steam out for the public.  Since then it has grown beyond that and added a lot of functionality.
 
-Feel free to fork or contribute to this module.
+This is a fork of [philippj/SteamworksPy](https://github.com/philippj/SteamworksPy). Modify to be used in [CN-DST-DEVELOPER/ModUploader](https://github.com/CN-DST-DEVELOPER/ModUploader)
 
-Pre-builds for Windows and Linux here: https://github.com/philippj/SteamworksPy/releases
+## How to install with pip
 
-Full documentation on getting started is now available here: https://philippj.github.io/SteamworksPy/
+You can simply install with follow command
 
-## What's New
-Updates since February 1st, 2020
-- Added: GetNumAchievements, GetAchievementName, GetAChievementDisplayAttribute by **aveao**
-- Added: missing file for packaging by **tpchanho**
-- Changed: organized Apps and Friends functions alphabetically to make editing easier
-- Changed: ClearGameInfo to actual Steamworks function ClearRichPresence
-- Fixed: argtypes for Workshop_SuspendDownloads by **tpchanho**
+```bash
+pip install git+https://github.com/zxcvbnm3057/SteamworksPy.git@master
+```
 
-## Requirements
-Following files are required to be located in your project working directory:
-- steam_appid.txt - Stating your games app id or any other valid app id given the account owns a license
-- steam_api library (.dll, .so, .darwin) and the corresponding steam_api.lib
-- SteamworksPy library (.dll, .so, .darwin)
+## How to build
 
-The library will only function if the Steam client is running and logged in. Otherwise you will encounter exceptions.
+You should Prepare following files before build :
+
+- Copy `steam_api64.dll` and `steam_api64.lib` from `sdk\redistributable_bin\your_operating_system` in [`steamworks_sdk.zip`](https://partner.steamgames.com/downloads/steamworks_sdk.zip) to `library\sdk\redist`
+- Copy all files from `sdk\public\steam` to `library\sdk\steam`
+- Modify path of `VsDevCmd.bat` in file `build_win_64.bat` to meet your VS install.
+
+Then you can run `build_win_64.bat your_vs_version` to build the library
 
 ## Some Notes
+
 While I am still tinkering away with this, here are some things to note:
 
-- You will need a Steamworks account, with a valid AppID, to use more advanced functions (set achievements, set stats, etc.)
-- Steam Overlay will only work if your game is using OpenGL or D3D!  Overlay will only work if the game is actually launched from Steam itself.  Possible if the SteamRestart command is fired; however, this is not implemented yet in SteamworksPy.
+- Require steam_appid.txt in the same dictionary of your python scrpit - Stating your games app id or any other valid app id given the account owns a license
+- The library will only function if the Steam client is running and logged in. Otherwise you will encounter exceptions.
 - Do not install Python from the Microsoft App Store. Make sure to [download and install it from Python's main site.](https://www.python.org/)
 
+For more information you can read [README.md](https://github.com/philippj/SteamworksPy#readme) on upstream.
+
 ## Usage
-Please check the examples in the "examples" directory for a basic understanding of the module. For further reference you can go through the interface implementations itself or use the official Steamworks documentation (https://partner.steamgames.com/doc/api)
+
+There is an examply usage of this module.
+
+- [CN-DST-DEVELOPER/ModUploader](https://github.com/CN-DST-DEVELOPER/ModUploader)

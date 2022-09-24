@@ -1,33 +1,34 @@
 from ctypes import *
 from enum import Enum
+from typing import List
 
-import steamworks.util 		as util
-from steamworks.enums 		import *
-from steamworks.structs 	import *
-from steamworks.exceptions 	import *
+import steamworks.util as util
+from steamworks.enums import *
+from steamworks.structs import *
+from steamworks.exceptions import *
 
 
 class SteamWorkshop(object):
-    _CreateItemResult_t 		= CFUNCTYPE(None, CreateItemResult_t)
-    _SubmitItemUpdateResult_t 	= CFUNCTYPE(None, SubmitItemUpdateResult_t)
-    _ItemInstalled_t 			= CFUNCTYPE(None, ItemInstalled_t)
-    _RemoteStorageSubscribePublishedFileResult_t 	= CFUNCTYPE(None, SubscriptionResult)
-    _RemoteStorageUnsubscribePublishedFileResult_t 	= CFUNCTYPE(None, SubscriptionResult)
+    _CreateItemResult_t = CFUNCTYPE(None, CreateItemResult_t)
+    _SubmitItemUpdateResult_t = CFUNCTYPE(None, SubmitItemUpdateResult_t)
+    _ItemInstalled_t = CFUNCTYPE(None, ItemInstalled_t)
+    _RemoteStorageSubscribePublishedFileResult_t = CFUNCTYPE(None, SubscriptionResult)
+    _RemoteStorageUnsubscribePublishedFileResult_t = CFUNCTYPE(None, SubscriptionResult)
+    _RemoteStorageSteamUGCDetails_t = CFUNCTYPE(None, SteamUGCQueryCompleted_t)
 
-    _CreateItemResult			= None
-    _SubmitItemUpdateResult 	= None
-    _ItemInstalled 				= None
-    _RemoteStorageSubscribePublishedFileResult 	= None
+    _CreateItemResult = None
+    _SubmitItemUpdateResult = None
+    _ItemInstalled = None
+    _RemoteStorageSubscribePublishedFileResult = None
     _RemoteStorageUnsubscribePublishedFileResult = None
-
+    _RemoteStorageSteamUGCDetails = None
 
     def __init__(self, steam: object):
         self.steam = steam
         if not self.steam.loaded():
             raise SteamNotLoadedException('STEAMWORKS not yet loaded')
 
-        self.GetNumSubscribedItems() # This fixes #58
-
+        self.GetNumSubscribedItems()  # This fixes #58
 
     def SetItemCreatedCallback(self, callback: object) -> bool:
         """Set callback for item created
@@ -39,7 +40,6 @@ class SteamWorkshop(object):
         self.steam.Workshop_SetItemCreatedCallback(self._CreateItemResult)
         return True
 
-
     def SetItemUpdatedCallback(self, callback: object) -> bool:
         """Set callback for item updated
 
@@ -49,7 +49,6 @@ class SteamWorkshop(object):
         self._SubmitItemUpdateResult = self._SubmitItemUpdateResult_t(callback)
         self.steam.Workshop_SetItemUpdatedCallback(self._SubmitItemUpdateResult)
         return True
-
 
     def SetItemInstalledCallback(self, callback: object) -> bool:
         """Set callback for item installed
@@ -61,7 +60,6 @@ class SteamWorkshop(object):
         self.steam.Workshop_SetItemInstalledCallback(self._ItemInstalled)
         return True
 
-
     def ClearItemInstalledCallback(self) -> None:
         """Clear item installed callback
 
@@ -70,17 +68,17 @@ class SteamWorkshop(object):
         self._ItemInstalled = None
         self.steam.Workshop_ClearItemInstalledCallback()
 
-
     def SetItemSubscribedCallback(self, callback: object) -> bool:
         """Set callback for item subscribed
 
         :param callback: callable
         :return: bool
         """
-        self._RemoteStorageSubscribePublishedFileResult = self._RemoteStorageSubscribePublishedFileResult_t(callback)
-        self.steam.Workshop_SetItemSubscribedCallback(self._RemoteStorageSubscribePublishedFileResult)
+        self._RemoteStorageSubscribePublishedFileResult = self._RemoteStorageSubscribePublishedFileResult_t(
+            callback)
+        self.steam.Workshop_SetItemSubscribedCallback(
+            self._RemoteStorageSubscribePublishedFileResult)
         return True
-
 
     def SetItemUnsubscribedCallback(self, callback: object) -> bool:
         """Set callback for item unsubscribed
@@ -88,12 +86,27 @@ class SteamWorkshop(object):
         :param callback: callable
         :return: bool
         """
-        self._RemoteStorageUnsubscribePublishedFileResult = self._RemoteStorageUnsubscribePublishedFileResult_t(callback)
-        self.steam.Workshop_SetItemUnsubscribedCallback(self._RemoteStorageUnsubscribePublishedFileResult)
+        self._RemoteStorageUnsubscribePublishedFileResult = self._RemoteStorageUnsubscribePublishedFileResult_t(
+            callback)
+        self.steam.Workshop_SetItemUnsubscribedCallback(
+            self._RemoteStorageUnsubscribePublishedFileResult)
         return True
 
+    def setQueryUGCRequestCallback(self, callback: object) -> bool:
+        """Set callback for UGC request
 
-    def CreateItem(self, app_id: int, filetype: EWorkshopFileType, callback: object = None, override_callback: bool = False) -> None:
+        :param callback: callable
+        :return: bool
+        """
+        self._RemoteStorageSteamUGCDetails = self._RemoteStorageSteamUGCDetails_t(callback)
+        self.steam.Workshop_SetQueryUGCRequestCallback(self._RemoteStorageSteamUGCDetails)
+        return True
+
+    def CreateItem(self,
+                   app_id: int,
+                   filetype: EWorkshopFileType,
+                   callback: object = None,
+                   override_callback: bool = False) -> None:
         """Creates a new workshop item with no content attached yet
 
         :param app_id: int
@@ -110,8 +123,10 @@ class SteamWorkshop(object):
 
         self.steam.Workshop_CreateItem(app_id, filetype.value)
 
-
-    def SubscribeItem(self, published_file_id: int, callback: object = None, override_callback: bool = False) -> None:
+    def SubscribeItem(self,
+                      published_file_id: int,
+                      callback: object = None,
+                      override_callback: bool = False) -> None:
         """ Subscribe to a UGC (Workshp) item
 
         :param published_file_id: int
@@ -130,8 +145,10 @@ class SteamWorkshop(object):
 
         self.steam.Workshop_SubscribeItem(published_file_id)
 
-
-    def UnsubscribeItem(self, published_file_id: int, callback: object = None, override_callback: bool = False) -> None:
+    def UnsubscribeItem(self,
+                        published_file_id: int,
+                        callback: object = None,
+                        override_callback: bool = False) -> None:
         """ Unsubscribe to a UGC (Workshp) item
 
         :param published_file_id: int
@@ -150,7 +167,6 @@ class SteamWorkshop(object):
 
         self.steam.Workshop_UnsubscribeItem(published_file_id)
 
-
     def StartItemUpdate(self, app_id: int, published_file_id: int) -> int:
         """ Start the item update process and receive an update handle
 
@@ -159,7 +175,6 @@ class SteamWorkshop(object):
         :return: int
         """
         return self.steam.Workshop_StartItemUpdate(app_id, c_uint64(published_file_id))
-
 
     def SetItemTitle(self, update_handle: int, title: str) -> bool:
         """Set the title of a Workshop item
@@ -173,7 +188,6 @@ class SteamWorkshop(object):
 
         return self.steam.Workshop_SetItemTitle(update_handle, title.encode())
 
-
     def SetItemDescription(self, update_handle: int, description: str) -> bool:
         """Set the description of a Workshop item
 
@@ -185,7 +199,6 @@ class SteamWorkshop(object):
             raise AttributeError('description exceeds 8000 characters')
 
         return self.steam.Workshop_SetItemDescription(update_handle, description.encode())
-
 
     def SetItemTags(self, update_handle: int, tags: list) -> bool:
         """Sets which tags apply to the Workshop item
@@ -201,8 +214,8 @@ class SteamWorkshop(object):
 
         return self.steam.Workshop_SetItemTags(update_handle, pointer_storage, len(tags))
 
-
-    def SetItemVisibility(self, update_handle: int, vis: ERemoteStoragePublishedFileVisibility) -> bool:
+    def SetItemVisibility(self, update_handle: int,
+                          vis: ERemoteStoragePublishedFileVisibility) -> bool:
         """Sets which users can see the Workshop item
 
         :param update_handle: int
@@ -212,7 +225,6 @@ class SteamWorkshop(object):
 
         return self.steam.Workshop_SetItemVisibility(update_handle, vis.value)
 
-
     def SetItemContent(self, update_handle: int, content_directory: str) -> bool:
         """ Set the directory containing the content you wish to upload to Workshop
 
@@ -221,7 +233,6 @@ class SteamWorkshop(object):
         :return: bool
         """
         return self.steam.Workshop_SetItemContent(update_handle, content_directory.encode())
-
 
     def SetItemPreview(self, update_handle: int, preview_image: str) -> bool:
         """Set the preview image of the Workshop item.
@@ -256,7 +267,6 @@ class SteamWorkshop(object):
 
         self.steam.Workshop_SubmitItemUpdate(update_handle, change_note)
 
-
     def GetItemUpdateProgress(self, update_handle: int) -> dict:
         """Get the progress of an item update request
 
@@ -266,18 +276,16 @@ class SteamWorkshop(object):
         punBytesProcessed = c_uint64()
         punBytesTotal = c_uint64()
 
-        update_status = self.steam.Workshop_GetItemUpdateProgress(
-            update_handle,
-            pointer(punBytesProcessed),
-            pointer(punBytesTotal))
+        update_status = self.steam.Workshop_GetItemUpdateProgress(update_handle,
+                                                                  pointer(punBytesProcessed),
+                                                                  pointer(punBytesTotal))
 
         return {
-            'status' : EItemUpdateStatus(update_status),
-            'processed' : punBytesProcessed.value,
-            'total' : punBytesTotal.value,
-            'progress' : ( punBytesProcessed.value / (punBytesTotal.value or 1) )
+            'status': EItemUpdateStatus(update_status),
+            'processed': punBytesProcessed.value,
+            'total': punBytesTotal.value,
+            'progress': (punBytesProcessed.value / (punBytesTotal.value or 1))
         }
-
 
     def GetNumSubscribedItems(self) -> int:
         """Get the total number of items the user is subscribed to for this game or application
@@ -286,7 +294,6 @@ class SteamWorkshop(object):
         """
         return self.steam.Workshop_GetNumSubscribedItems()
 
-
     def SuspendDownloads(self, paused: bool = True) -> None:
         """Suspend active workshop downloads
 
@@ -294,7 +301,6 @@ class SteamWorkshop(object):
         :return: None
         """
         return self.steam.Workshop_SuspendDownloads(paused)
-
 
     def GetSubscribedItems(self, max_items: int = 0) -> list:
         """Get a list of published file IDs that the user is subscribed to
@@ -320,7 +326,6 @@ class SteamWorkshop(object):
 
         return published_files
 
-
     def GetItemState(self, published_file_id: int) -> EItemState:
         """Get the current state of a workshop item
 
@@ -328,7 +333,6 @@ class SteamWorkshop(object):
         :return: EItemState
         """
         return EItemState(self.steam.Workshop_GetItemState(published_file_id))
-
 
     def GetItemInstallInfo(self, published_file_id: int, max_path_length: int = 1024) -> dict:
         """Get info about an installed item
@@ -341,18 +345,18 @@ class SteamWorkshop(object):
         punTimeStamp = pointer(c_uint32(0))
         pchFolder = create_string_buffer(max_path_length)
 
-        is_installed = self.steam.Workshop_GetItemInstallInfo(
-            published_file_id, punSizeOnDisk, pchFolder, max_path_length, punTimeStamp)
+        is_installed = self.steam.Workshop_GetItemInstallInfo(published_file_id, punSizeOnDisk,
+                                                              pchFolder, max_path_length,
+                                                              punTimeStamp)
 
         if not is_installed:
             return {}
 
         return {
-            'disk_size' : punSizeOnDisk,
-            'folder' : pchFolder.value.decode(),
-            'timestamp' : punTimeStamp.contents.value
+            'disk_size': punSizeOnDisk,
+            'folder': pchFolder.value.decode(),
+            'timestamp': punTimeStamp.contents.value
         }
-
 
     def GetItemDownloadInfo(self, published_file_id: int) -> dict:
         """Get download info for a subscribed item
@@ -364,15 +368,66 @@ class SteamWorkshop(object):
         punBytesTotal = pointer(c_uint64(0))
 
         # pBytesTotal will only be valid after the download has started.
-        available = self.steam.Workshop_GetItemDownloadInfo(published_file_id, punBytesDownloaded, punBytesTotal)
+        available = self.steam.Workshop_GetItemDownloadInfo(published_file_id, punBytesDownloaded,
+                                                            punBytesTotal)
         if available:
             downloaded = punBytesDownloaded.contents.value
             total = punBytesTotal.contents.value
 
             return {
-                'downloaded' : downloaded,
-                'total' : total,
-                'progress' : 0.0 if total <= 0 else ( downloaded / total )
+                'downloaded': downloaded,
+                'total': total,
+                'progress': 0.0 if total <= 0 else (downloaded / total)
             }
 
         return {}
+
+    def CreateQueryUGCDetailsRequest(self, published_file_id_list: List[int]) -> int:
+        """ Create a request to query UGC (Workshp) items for details
+
+        :param published_file_id_list: List[int]
+        :return: int
+        """
+        return self.steam.Workshop_CreateQueryUGCDetailsRequest(
+            (c_uint64 * len(published_file_id_list))(*published_file_id_list),
+            len(published_file_id_list))
+
+    def ReleaseQueryUGCRequest(self, handle: int) -> None:
+        self.steam.Workshop_ReleaseQueryUGCRequest(handle)
+
+    def SendQueryUGCRequest(self,
+                            handle: int,
+                            callback: object = None,
+                            override_callback: bool = False) -> None:
+        """ Send the query handle return by CreateQueryUGCDetailsRequest
+
+        :param handle: int
+        :return:
+        """
+        """Creates a new workshop item with no content attached yet
+
+        :param app_id: int
+        :param filetype: EWorkshopFileType
+        :param callback: callable
+        :param override_callback: bool
+        :return: None
+        """
+        if override_callback:
+            self.setQueryUGCRequestCallback(callback)
+
+        elif callback and not self._RemoteStorageSteamUGCDetails:
+            self.setQueryUGCRequestCallback(callback)
+
+        if self._RemoteStorageSteamUGCDetails is None:
+            raise SetupRequired('Call `setQueryUGCRequestCallback` first or supply a `callback`')
+
+        self.steam.Workshop_SendQueryUGCRequest(handle)
+
+    def GetQueryUGCResult(self, handle: int, index: int) -> SteamUGCDetails_t:
+        """ Get the details of a single creative workshop item after receiving the UGC query result.
+
+        :param handle: int
+        :param index: int
+        :return: SteamUGCDetails
+        """
+        return self.steam.Workshop_GetQueryUGCResult(handle, index)

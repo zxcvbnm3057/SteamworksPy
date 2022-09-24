@@ -402,7 +402,8 @@ STEAMWORKS_METHODS = {
     },
     'Workshop_GetItemInstallInfo': {
         'restype': bool,
-        'argtypes': [c_uint64, POINTER(c_uint64), c_char_p, c_uint32,  POINTER(c_uint32)]
+        'argtypes': [c_uint64, POINTER(c_uint64), c_char_p, c_uint32,
+                     POINTER(c_uint32)]
     },
     'Workshop_GetItemDownloadInfo': {
         'restype': bool,
@@ -434,6 +435,26 @@ STEAMWORKS_METHODS = {
     'Workshop_UnsubscribeItem': {
         'restype': None,
         'argtypes': [c_uint64]
+    },
+    'Workshop_CreateQueryUGCDetailsRequest': {
+        'restype': c_uint64,
+        'argtypes': [POINTER(c_uint64), c_uint32]
+    },
+    'Workshop_ReleaseQueryUGCRequest': {
+        'restype': c_bool,
+        'argtypes': [c_uint64]
+    },
+    'Workshop_SetQueryUGCRequestCallback': {
+        'restype': None,
+        'argtypes': [MAKE_CALLBACK(None, structs.SteamUGCQueryCompleted_t)]
+    },
+    'Workshop_SendQueryUGCRequest': {
+        'restype': c_bool,
+        'argtypes': [c_uint64]
+    },
+    'Workshop_GetQueryUGCResult': {
+        'restype': POINTER(structs.SteamUGCDetails_t),
+        'argtypes': [c_uint64, c_uint32]
     },
     'MicroTxn_SetAuthorizationResponseCallback': {
         'restype': None,
